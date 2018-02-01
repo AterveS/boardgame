@@ -3,7 +3,7 @@
 #include <random>
 #include <fstream>
 #include <conio.h>
-
+#include <windows.h>
 #include "ini.h"
 /////////////////////////////////
 #define GAME_TITLE Gra
@@ -26,6 +26,13 @@
 
 using namespace std;
 int main();
+
+void fontcolor(int c)
+{
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //FONT COLOR INITIALIZER
+SetConsoleTextAttribute(hConsole, c); // FONT COLOR
+}
+
 class Player
 {
 
@@ -45,8 +52,8 @@ public:
 
     void create(int i = 0)
     {
-        if(i == 0) cout << "Introduce yourself.." << endl;
-        cout << i+1 << ") Player Name: "; cin >> name;
+        if(i == 0) cout << "Przedstawcie siê.." << endl;
+        cout << i+1 << ") Imiê: "; cin >> name;
         position = 0;
         tour = false;
     }
@@ -87,25 +94,25 @@ public:
         {
         case 0:
             {
-            cout << "you fall into huge hole, you had broked your leg" << endl;
+            cout << "spad³ do dziury i znalaz³ wyjœcie 2 pozycje wstecz..." << endl;
             return 2;
             //break;
             }
         case 1:
             {
-            cout << "you had step into slippy slime, in one moment your chin checked hardness of step on which you've stand" << endl;
+            cout << "nie zwracaj¹c wiêkszej uwagi, Ÿle stan¹³ na stopniu... piêknym fiflokiem polecia³ dwa miejsca wstecz..." << endl;
             return 2;
             //break;
             }
         case 2:
             {
-            cout << "somthing kick you back..." << endl;
+            cout << "coœ ciê kopnê³o..." << endl;
             return 2;
             //break;
             }
         case 3:
             {
-            cout << "sleep well..." << endl;
+            cout << "œpij dobrze..." << endl;
             return 0;
             //break;
             }
@@ -162,31 +169,53 @@ public:
 
     int spoke(int choice, int &position, string &name)
     {
+        int trying;
         switch(choice)
         {
         case 1:
             {
-            cout << "\nnothing happend.";
+            cout << "\nnic siê nie dzieje.";
             return 0;
             }
         case 2:
             {
+            cout <<"\n"<< name << " proboje siê broniæ\nJeœli "<< name <<" wyrzuci 1 lub 6 wygra t¹ walkê!\n";
+            trying = dice();
+            cout << "Rzut: " << trying << endl;
+            if(trying==1 || trying==6)
+            {
+                fontcolor(10);
+                cout <<"\n" << name << " obroni³ siê!\n";
+                fontcolor(7);
+                return 0;
+            }
+            else
+            {
             position -= dice();
-            cout <<"\n"<< name <<", someone fondly huge your ass...\n";
+            fontcolor(12);
+            cout <<"\n"<< name <<", dostajesz kopa w ty³ek...\n";
+            fontcolor(7);
             return 0;
+            }
             }
         case 3:
             {
-            cout << "\nYou trying to fall him down..\n";
+            cout << "\nPróbujesz zrzuciæ go ze stopnia..\n";
                 if(dice()==DICEWALL)
                     {
-                    position = 0;
-                    cout << name <<" head, hit hardly the first step of game\n";
+                    position -= 10;
+                    fontcolor(10);
+                    cout << "SUKCES!!\n";
+                    fontcolor(7);
+                    cout << name <<" uderza twardo g³ow¹ o stopieñ, kilka miejsc ni¿ej\n";
                     return 0;
                     }
                 else
                     {
-                    cout << "\n You just tried...";
+                    fontcolor(12);
+                    cout << "PORA¯KA\n";
+                    fontcolor(7);
+                    cout << "No có¿... przynajmniej próbowa³eœ...\n";
                     }
             }
         }
@@ -227,7 +256,7 @@ int gameplay(int P, bool &luck)
 {   int pp = 0;
     if(board[P]==0)
         {
-            cout << "has moved quickly ahead.\n" << endl;
+            cout << "idzie szybko przed siebie.\n" << endl;
         return P;
         }
         else
@@ -235,41 +264,62 @@ int gameplay(int P, bool &luck)
             pp = trap();
         if(pp==12)
         {
-            cout << "back to start." <<endl;
+            cout << "INFO::";
+            fontcolor(12);
+            cout <<" Wracasz na start." <<endl;
+            fontcolor(7);
             return P-P;
         }
         else if((P-pp)<0)
             {
-                cout <<"additional dice roll"<< endl;
+                cout <<"INFO::";
+                fontcolor(10);
+                cout <<" Dodatkowy rzut kostk¹"<< endl;
+                fontcolor(7);
                 luck = true;
                 return P;
             }
         else if(pp==0)
             {
-            cout << "lost turn..." << endl;
+            cout << "INFO::";
+            fontcolor(12);
+            cout <<" Tracisz kolejke..." << endl;
+            fontcolor(7);
             return P;
             }
         else if(pp>=1 && pp<=8)
             {
-            cout <<"you fallen from "<<P<<" to " <<P-pp<< endl;
+            cout <<"INFO::";
+            fontcolor(12);
+            cout <<" Spadasz z "<<P<<" na " <<P-pp<< endl;
+            fontcolor(7);
             return P-pp;
             }
         else if(pp==9)
             {
             pp = dice();
-            cout << "you move additional " << pp << " steps" << endl;
+            cout << "INFO::";
+            fontcolor(10);
+            cout << " Poruszasz sie dodatkowo " << pp << " miejsc" << endl;
+            fontcolor(7);
             return P+pp;
             }
         else if(pp==10)
             {
-            cout <<"additional dice roll"<<endl;
+            cout <<"INFO::";
+            fontcolor(10);
+            cout<<" Dodatkowy rzut kostk¹"<<endl;
+            fontcolor(7);
             luck = true;
             return P;
             }
         else if(pp==11)
         {
             pp = dice();
-            cout <<"Culumbus! You move " <<pp<< " steps forward and get additional rolling." << endl;
+            cout <<"INFO::";
+            fontcolor(10);
+            cout <<" Culumbus! Idziesz " <<pp<< " miejsc do przodu oraz masz dodatkowy rzut kostk¹." << endl;
+            fontcolor(7);
             luck = true;
             return P+pp;
         }
@@ -292,14 +342,16 @@ int gameplay(int P, bool &luck)
 
 int main()
 {
+    fontcolor(7);
     inicjalizacja();
     Game * G = new Game;
     Player * P = new Player[PLAYERS];
-    cout <<"============================ INTRODUCTION ===============================\n";
+    cout <<"============================== WSTÊP ===================================\n";
     cout << G->data;
     cout <<"\n=========================================================================\n";
     for(int i = 0; i < PLAYERS; i++)
     {
+    fontcolor(6);
     P[i].create(i);
     }
 
@@ -311,10 +363,22 @@ int main()
     bool loop = true;
     while(loop) // Main game l00p ]:->
     {
-    cout << "==================== TOUR "<< ++tour <<  " ==================" << endl;
-    cout << "== Now: " << P[i].name << " Pos: " << P[i].position << endl;
+    fontcolor(6);
+    cout << "==================== TURA "<< ++tour <<  " ==================" << endl;
+    fontcolor(7);
+    cout << "== Teraz: ";
+    fontcolor(10);
+    cout << P[i].name;
+    fontcolor(7);
+    cout << " Poz: ";
+    fontcolor(10);
+    cout << P[i].position << endl;
     roll = G->dice();
-    cout << "== Rolling: "<< roll << endl << endl;
+    fontcolor(7);
+    cout << "== Rrzut: ";
+    fontcolor(10);
+    cout << roll << endl << endl;
+    fontcolor(7);
     P[i].position += roll;
     cout << P[i].name << ", ";
     P[i].position = G->gameplay(P[i].position, P[i].tour);
@@ -323,13 +387,24 @@ int main()
     if(P[0].position == P[1].position && P[0].position!=0 && P[1].position!=0)
     {
         int a;
-        cout << "You spoke another player..\nLet see, what you can to do...\n";
-        cout << "1) Nothing...\n";
-        cout << "2) Kick him!\n";
-        cout << "3) Try to fall him down..\n";
-        cout << "Choice: ";
+        do{
+        fontcolor(3);
+        cout << "Spotykasz gracza na tym samym stopniu..\nHmm co by mu tu zrobiæ..\n";
+        fontcolor(7);
+        cout << "-------------MENU----------------\n";
+        fontcolor(11);
+        cout << "1) W sumie to nic...\n";
+        cout << "2) Kopnij go!\n";
+        cout << "3) Spróbuj zrzuciæ go na dó³..\n";
+        fontcolor(7);
+        cout << "---------------------------------\n";
+        fontcolor(3);
+        cout << "Wybór: ";
+        fontcolor(10);
         cin >> a;
         cout << "\n";
+        }while(!cin.good());
+        fontcolor(7);
         cin.clear();
         cin.sync();
         if(i==1)
@@ -344,12 +419,16 @@ int main()
     {
         if(P[p].position>=BOARDLENGTH)
         {
-            cout << "\nPlayer " <<P[p].name<< " won!" << endl;
+            cout << "\nGracz " <<P[p].name<< " wygra³!" << endl;
             loop=false;
         }
         else
         {
-        cout << "== " << P[p].name << "\t[" <<P[p].position<< "] ==" << endl;
+        cout << "== " << P[p].name << "\t[";
+        fontcolor(6);
+        cout <<P[p].position;
+        fontcolor(7);
+        cout << "] ==" << endl;
         }
     }
     //========================== Creating new game board ============================//
@@ -362,15 +441,17 @@ int main()
         cout << a;
         }
         system("cls");
-        cout << "The board has blinded both of you with a great flash..." << endl;
-        cout << "Something has changed..." << endl;
+        fontcolor(14);
+        cout << "Wielki b³ysk z serca gry oœlepi³ was na moment..." << endl;
+        cout << "Macie nieodparte wra¿enie, ¿e coœ siê zmieni³o..." << endl;
         G->board_creation();
         j = 0;
+        fontcolor(7);
     }
     j++;
 //================================================================================//
 
-    if(P[i].tour==true)
+    if(P[i].tour==true) // TOUR - HAPPY ROLL
     {
     getchar();
     P[i].tour=false;
